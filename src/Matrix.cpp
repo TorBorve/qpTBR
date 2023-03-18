@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "LapackReplacement.h"
 
 #include <iostream>
 #include <cstring>
@@ -41,6 +42,22 @@ Matrix Matrix::duplicate() const {
     real_t *newVal = new real_t[rows*cols];
     std::memcpy(newVal, val, rows*cols*sizeof(real_t));
     return Matrix(rows, cols, newVal);
+}
+
+ReturnValue Matrix::multiply(real_t alpha, const Matrix &x, real_t beta, Matrix &y) const {
+    if (rows != y.rows || x.rows != cols || y.cols > 1) {
+        return ReturnValue::FAILURE;
+    }
+    char transA = 'T';
+    char transB = 'N';
+    int M = rows;
+    int N = y.cols;
+    int K = cols;
+    int LDA = cols;
+    int LDB = x.rows;
+    int LDC = y.rows;
+    LAPACK_DGEMM(&transA, &transB, &M, &N, &K, &alpha, val, &LDA, x.val, &LDB, &beta, y.val, &LDC);
+    return ReturnValue::SUCCESS;
 }
 
 } // namespace qpTBR

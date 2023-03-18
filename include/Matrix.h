@@ -20,9 +20,11 @@ public:
     ~Matrix();
 
     real_t* getFull() { return val; }
+    real_t const* getFull() const { return val; }
     int getRows() const { return rows; }
     int getCols() const { return cols; }
     Matrix duplicate() const;
+    ReturnValue multiply(real_t alpha, const Matrix &x, real_t beta, Matrix &y) const;
     ReturnValue addToDiag(real_t alpha);
     ReturnValue print(std::string name) const;
 private:
